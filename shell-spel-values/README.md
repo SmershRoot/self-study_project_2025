@@ -1,4 +1,5 @@
 # Модуль по работе с SPEL-выражениями с использованием spring-shell
+https://docs.spring.io/spring-framework/reference/core/expressions.html
 
 ## ПРЕДСТОЯЩИЕ ДОРАБОТКИ:
 ### 1. сервисы - интерфейс и работа через него

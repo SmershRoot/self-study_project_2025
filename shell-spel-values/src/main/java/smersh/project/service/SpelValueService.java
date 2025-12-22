@@ -15,8 +15,12 @@ public class SpelValueService {
     @Value("#{new java.util.Date().toString()}")
     private String spelDateValue;
 
+
+    @Value("#{'Hello World'.concat('!')}")
+    private String hw;
+
     public String getSpelValue() {
-        return spelValue + "\n" + spelDateValue;
+        return spelValue + "\n" + spelDateValue + "\n" + hw;
     }
 
 
