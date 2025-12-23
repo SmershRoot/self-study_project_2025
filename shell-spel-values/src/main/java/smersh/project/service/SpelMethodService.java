@@ -42,19 +42,29 @@ public class SpelMethodService {
                 "\nListSize:" + list.size();
     }
 
+    /**
+     * Добавление элемента в список
+     * <p>
+     * <br>SpelParserConfiguration -устанавливаю метод MIXED, вычисление выражений автоматически переключается между
+     * интерпретируемым и скомпилированным режимами
+     * <br>Загрузчик классов использую текущий класс, думаю это лучше чем использовать потоковый (null)
+     * <br>true - автодополнение свойств и коллекций
+     * </p>
+     *
+     * @return
+     */
     public String setListValue() {
         GregorianCalendar c = new GregorianCalendar();
         c.set(1856, Calendar.AUGUST, 9);
         TestObjectWithList testObject = new TestObjectWithList("Nikola Tesla", c.getTime(), new ArrayList<>(List.of("Zero")));
 
-        SpelParserConfiguration config = new SpelParserConfiguration(true, true);
+        SpelParserConfiguration config = new SpelParserConfiguration(SpelCompilerMode.MIXED, this.getClass().getClassLoader(), true, true, Integer.MAX_VALUE);
 
         ExpressionParser parser = new SpelExpressionParser(config);
 
         Expression exp = parser.parseExpression("list");
         var list = (List) exp.getValue(testObject);
         exp = parser.parseExpression("list[3]");
-//        exp.getValue(testObject);
         exp.setValue(testObject, "Three");
 
         return "Был в массиве 1 элемент [0] = 'Zero', добавили list[3] и стало: " + list.size() + " элементов:\n"
