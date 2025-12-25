@@ -35,6 +35,34 @@ public class ShellCommands {
         return spelMethodService.getSpelValue();
     }
 
+    @ShellMethod(value = "Test command", key = "init-fruit")
+    public String inittFruitMethod() {
+        return spelMethodService.initFruitMapAccessor();
+    }
+
+    /**
+     * Добавить задание для цвета и фрукта
+     */
+    @ShellMethod(value = "Test command", key = "set-fruit")
+    public String setFruitMethod() {
+        return spelMethodService.setFruitValue();
+    }
+
+    @ShellMethod(value = "Test command", key = "get-fruit")
+    public String getFruitMethod() {
+        return spelMethodService.getFruitValue();
+    }
+
+    @ShellMethod(value = "Test command", key = "clear-context")
+    public String clearContext() {
+        return "" + spelMethodService.clearContext();
+    }
+
+    @ShellMethod(value = "Test command", key = "get-bean-fruit")
+    public String getFruitValue() {
+        return spelValueService.getFruitValue();
+    }
+
     @ShellMethod(value = "Test command", key = "spel-method-set-list")
     public String setListValue() {
         return spelMethodService.setListValue();

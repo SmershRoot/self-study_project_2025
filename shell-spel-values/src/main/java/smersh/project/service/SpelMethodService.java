@@ -1,13 +1,20 @@
 package smersh.project.service;
 
+import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.IndexAccessor;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.expression.spel.SpelCompilerMode;
+import org.springframework.expression.spel.support.ReflectiveIndexAccessor;
+import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.stereotype.Service;
+import smersh.project.ContextHolder;
+import smersh.project.model.FruitMap;
 import smersh.project.model.TestObjectWithList;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -71,7 +78,48 @@ public class SpelMethodService {
                 + IntStream.range(0, list.size()).mapToObj(i -> i + ": " + list.get(i)).collect(Collectors.joining("\n"));
     }
 
+    public String initFruitMapAccessor() {
+        // Create a ReflectiveIndexAccessor for FruitMap
+        IndexAccessor fruitMapAccessor = new ReflectiveIndexAccessor(
+                FruitMap.class, Color.class, "getFruit", "setFruit");
 
+// Register the IndexAccessor for FruitMap
+        var context = new StandardEvaluationContext();
+        ContextHolder.setContext(context);
 
+        context.addIndexAccessor(fruitMapAccessor);
+
+// Register the fruitMap variable
+        context.setVariable("fruitMap", new FruitMap());
+
+// evaluates to "cherry"
+        ExpressionParser parser = new SpelExpressionParser();
+        String fruit = parser.parseExpression("#fruitMap[T(java.awt.Color).RED]")
+                .getValue(context, String.class);
+        return fruit;
+    }
+
+    public String setFruitValue() {
+        ExpressionParser parser = new SpelExpressionParser();
+        EvaluationContext context = ContextHolder.getContext();
+        parser.parseExpression("#fruitMap[T(java.awt.Color).RED]")
+                .setValue(context, "NEW FRUIT");
+        String fruit = parser.parseExpression("#fruitMap[T(java.awt.Color).RED]")
+                .getValue(context, String.class);
+        return fruit;
+    }
+
+    public String getFruitValue() {
+        ExpressionParser parser = new SpelExpressionParser();
+        EvaluationContext context = ContextHolder.getContext();
+        String fruit = parser.parseExpression("#fruitMap[T(java.awt.Color).RED]")
+                .getValue(context, String.class);
+        return fruit;
+    }
+
+    public boolean clearContext() {
+        ContextHolder.clearContext();
+        return true;
+    }
 
 }

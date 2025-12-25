@@ -19,8 +19,15 @@ public class SpelValueService {
     @Value("#{'Hello World'.concat('!')}")
     private String hw;
 
+    @Value("#{fruitMap != null && fruitMap.containsKey(T(java.awt.Color).RED) ? fruitMap.get(T(java.awt.Color).RED) : null}")
+    private String fruit;
+
     public String getSpelValue() {
         return spelValue + "\n" + spelDateValue + "\n" + hw;
+    }
+
+    public String getFruitValue() {
+        return fruit;
     }
 
 
