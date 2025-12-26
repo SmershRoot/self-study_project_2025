@@ -25,45 +25,48 @@ public class ShellCommands {
         return "Test command";
     }
 
-    @ShellMethod(value = "Test command", key = "spel-value")
+    @ShellMethod(value = "Получение какого-то значения на основе выражения в @Value", key = "spel-value")
     public String getSpelValue() {
         return spelValueService.getSpelValue();
     }
 
-    @ShellMethod(value = "Test command", key = "spel-method")
+    @ShellMethod(value = "Получение какого-то значения на основе выражения в методе со Spel", key = "spel-method")
     public String getSpelMethod() {
         return spelMethodService.getSpelValue();
     }
 
-    @ShellMethod(value = "Test command", key = "init-fruit")
-    public String inittFruitMethod() {
+    @ShellMethod(value = "Инициализация фруктового объекта с Map-ой соответствия цвета и фрукта", key = "init-fruit")
+    public String initFruitMethod() {
         return spelMethodService.initFruitMapAccessor();
     }
 
     /**
-     * Добавить задание для цвета и фрукта
+     * TODO Добавить задание для цвета и фрукта
      */
-    @ShellMethod(value = "Test command", key = "set-fruit")
+    @ShellMethod(value = "Установка нового значения для соответствия цвета и фрукта", key = "set-fruit")
     public String setFruitMethod() {
         return spelMethodService.setFruitValue();
     }
 
-    @ShellMethod(value = "Test command", key = "get-fruit")
+    /**
+     * TODO Добавить передачу цвета
+     */
+    @ShellMethod(value = "Получение текущего значения фрукта для цвета", key = "get-fruit")
     public String getFruitMethod() {
         return spelMethodService.getFruitValue();
     }
 
-    @ShellMethod(value = "Test command", key = "clear-context")
+    @ShellMethod(value = "Очистка контекста порожденного инициализацией фруктового объекта", key = "clear-context")
     public String clearContext() {
         return "" + spelMethodService.clearContext();
     }
 
-    @ShellMethod(value = "Test command", key = "get-bean-fruit")
+    @ShellMethod(value = "Получение значения фруктового объекта на основе выражения в @Value", key = "get-bean-fruit")
     public String getFruitValue() {
         return spelValueService.getFruitValue();
     }
 
-    @ShellMethod(value = "Test command", key = "spel-method-set-list")
+    @ShellMethod(value = "Добавление элементов в список с авторасширением списка", key = "spel-method-set-list")
     public String setListValue() {
         return spelMethodService.setListValue();
     }

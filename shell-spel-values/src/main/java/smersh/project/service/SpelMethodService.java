@@ -10,7 +10,7 @@ import org.springframework.expression.spel.SpelCompilerMode;
 import org.springframework.expression.spel.support.ReflectiveIndexAccessor;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.stereotype.Service;
-import smersh.project.ContextHolder;
+import smersh.project.holder.ContextHolder;
 import smersh.project.model.FruitMap;
 import smersh.project.model.TestObjectWithList;
 
@@ -79,20 +79,22 @@ public class SpelMethodService {
     }
 
     public String initFruitMapAccessor() {
-        // Create a ReflectiveIndexAccessor for FruitMap
+// Создание ReflectiveIndexAccessor для FruitMap
         IndexAccessor fruitMapAccessor = new ReflectiveIndexAccessor(
                 FruitMap.class, Color.class, "getFruit", "setFruit");
 
-// Register the IndexAccessor for FruitMap
+// Создание контекста с IndexAccessor для FruitMap
+//TODO если контекст уже есть, то не создавать новый, а использовать старый
+//TODO И в отдельный метод
         var context = new StandardEvaluationContext();
         ContextHolder.setContext(context);
 
         context.addIndexAccessor(fruitMapAccessor);
 
-// Register the fruitMap variable
+// Создает фруктовый объект fruitMap и регистрирует его в контексте
         context.setVariable("fruitMap", new FruitMap());
 
-// evaluates to "cherry"
+//получение значения
         ExpressionParser parser = new SpelExpressionParser();
         String fruit = parser.parseExpression("#fruitMap[T(java.awt.Color).RED]")
                 .getValue(context, String.class);
