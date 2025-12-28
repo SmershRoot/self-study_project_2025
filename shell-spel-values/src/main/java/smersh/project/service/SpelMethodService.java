@@ -1,9 +1,6 @@
 package smersh.project.service;
 
-import org.springframework.expression.EvaluationContext;
-import org.springframework.expression.Expression;
-import org.springframework.expression.ExpressionParser;
-import org.springframework.expression.IndexAccessor;
+import org.springframework.expression.*;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.expression.spel.SpelCompilerMode;
@@ -13,6 +10,7 @@ import org.springframework.stereotype.Service;
 import smersh.project.holder.ContextHolder;
 import smersh.project.model.FruitMap;
 import smersh.project.model.TestObjectWithList;
+import smersh.project.overloader.operator.ListOperatorOverloader;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -122,6 +120,68 @@ public class SpelMethodService {
     public boolean clearContext() {
         ContextHolder.clearContext();
         return true;
+    }
+
+    public List<String> performOperationsOnArrays() {
+        List<Number> leftList = new ArrayList<>(List.of(1,2,3));
+        List<Number> rightList = new ArrayList<>(List.of(4,5));
+
+        List<String> result = new ArrayList<>();
+        ExpressionParser parser = new SpelExpressionParser();
+        StandardEvaluationContext context = new StandardEvaluationContext();
+        context.setOperatorOverloader(new ListOperatorOverloader());
+
+        int numOperations = 1;
+        for (Operation operation : Operation.values()) {
+            result.add(performOperationOnArrays(parser, context, leftList, rightList, operation, numOperations));
+            numOperations++;
+        }
+        return result;
+    }
+
+    private String performOperationOnArrays(
+            ExpressionParser parser,
+            StandardEvaluationContext context,
+            List<Number> leftList,
+            List<Number> rightList,
+            Operation operation,
+            int numOperations
+    ) {
+        var operationSymbol = getOperationSymbol(operation);
+        context.setVariable("leftList", leftList);
+        context.setVariable("rightList", rightList);
+        var list = performOperationOnArrays(parser, context, operationSymbol);
+        return "%d. Result for lists %s and %s with operation %s: %s".formatted(
+                numOperations, leftList.toString(), rightList.toString(),
+                operationSymbol, list.toString()
+        );
+    }
+
+    private String getOperationSymbol(Operation operation) {
+        return switch (operation) {
+            case ADD -> "+";
+            case SUBTRACT -> "-";
+            case DIVIDE -> "/";
+            case MULTIPLY -> "*";
+            case MODULUS -> "%";
+            case POWER -> "^";
+        };
+    }
+
+    /**
+     *
+     * Примеры использования  parser.parseExpression с массивами
+     * parser.parseExpression("{1, 2, 3} + {4, 5}")
+     * parser.parseExpression("T(java.util.List).of(1,2,3) + T(java.util.List).of(1,2,3)")
+     */
+    public List<Number> performOperationOnArrays(
+            ExpressionParser parser,
+            StandardEvaluationContext context,
+            String operation
+    ) {
+        var expressionString = "#leftList" + operation + "#rightList";
+
+        return parser.parseExpression(expressionString).getValue(context, List.class);
     }
 
 }

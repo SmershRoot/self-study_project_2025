@@ -5,6 +5,8 @@ import org.springframework.shell.standard.ShellMethod;
 import smersh.project.service.SpelMethodService;
 import smersh.project.service.SpelValueService;
 
+import java.util.List;
+
 @ShellComponent
 public class ShellCommands {
 
@@ -71,5 +73,9 @@ public class ShellCommands {
         return spelMethodService.setListValue();
     }
 
+    @ShellMethod(value = "Произвести переопределённые операции над 2-мя массивами", key = "operations-2lists")
+    public String performOperationsOnArrays() {
+        return String.join("\n", spelMethodService.performOperationsOnArrays());
+    }
 
 }
