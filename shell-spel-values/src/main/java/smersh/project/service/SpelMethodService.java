@@ -19,6 +19,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Наборы методов с SPEL
@@ -182,6 +183,32 @@ public class SpelMethodService {
         var expressionString = "#leftList" + operation + "#rightList";
 
         return parser.parseExpression(expressionString).getValue(context, List.class);
+    }
+
+
+    public String getValueFromMethod() {
+        TestObjectWithList testObject = new TestObjectWithList("Nikola Tesla", null, new ArrayList<>(List.of("Zero")));
+
+        ExpressionParser parser = new SpelExpressionParser();
+        StandardEvaluationContext context = new StandardEvaluationContext(testObject);
+        try {
+            context.setVariable("reverseString", StringUtils.class.getMethod("reverse", String.class));
+            context.setVariable("reverseTestValue", this.getClass().getDeclaredMethod("getTestValue", String.class));
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+
+        var resTrue = parser.parseExpression("isCurrentName('Nikola Tesla')").getValue(context, Boolean.class);
+        var resFalse = parser.parseExpression("isCurrentName('Vang')").getValue(context, Boolean.class);
+        var name = parser.parseExpression("getName()").getValue(context, String.class);
+        var getReverseValue = parser.parseExpression("#reverseString(getName())").getValue(context, String.class);
+        var getTestValue = parser.parseExpression("#reverseTestValue(getName())").getValue(context, String.class);
+        return "isCurrentName('Nikola Tesla'): %s\nisCurrentName('Vang'): %s\ngetName(): %s\ngetReverseValue: %s\ngetTestValue: %s"
+                .formatted(resTrue, resFalse, name, getReverseValue, getTestValue);
+    }
+
+    private static String getTestValue(String value) {
+        return StringUtils.reverse(value);
     }
 
 }

@@ -57,4 +57,9 @@ public class SpelMethodShellCommand {
         return String.join("\n", spelMethodService.performOperationsOnArrays());
     }
 
+    @ShellMethod(value = "Работа с методом класса", key = "get-value-class-method")
+    public String getValueClassMethod() {
+        return spelMethodService.getValueFromMethod();
+    }
+
 }
