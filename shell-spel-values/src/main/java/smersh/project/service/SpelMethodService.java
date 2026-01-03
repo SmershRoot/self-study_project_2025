@@ -1,5 +1,8 @@
 package smersh.project.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.expression.BeanFactoryResolver;
 import org.springframework.expression.*;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.SpelParserConfiguration;
@@ -31,6 +34,8 @@ import org.apache.commons.lang3.StringUtils;
 @Service
 public class SpelMethodService {
 
+    @Autowired
+    private ApplicationContext applicationContext;
 
     public String getSpelValue() {
         GregorianCalendar c = new GregorianCalendar();
@@ -252,6 +257,23 @@ public class SpelMethodService {
 
         return resultOneBlock;
     }
+
+    /**
+     * Работа через получение контекста приложения и BeanResolver
+     */
+    public String getValueBean() {
+        StandardEvaluationContext context = new StandardEvaluationContext();
+        ExpressionParser parser = new SpelExpressionParser();
+        context.setBeanResolver(new BeanFactoryResolver(applicationContext));
+        Expression expressionFruitMap = parser.parseExpression("@fruitMap.get(T(java.awt.Color).RED)");
+        Expression expressionTestService = parser.parseExpression("@testService.doSomething()"); //parser.parseExpression("@testService.doSomething()
+        return "FruitMap: %s\nTestService: %s".formatted(
+                expressionFruitMap.getValue(context, String.class),
+                expressionTestService.getValue(context, String.class)
+        );
+    }
+
+
     private static String getTestValue(String value) {
         return StringUtils.reverse(value);
     }

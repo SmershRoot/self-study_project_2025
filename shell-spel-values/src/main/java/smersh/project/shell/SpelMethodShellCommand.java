@@ -71,4 +71,10 @@ public class SpelMethodShellCommand {
     public String getValueFunction() throws NoSuchMethodException, IllegalAccessException {
         return spelMethodService.getValueFunctions();
     }
+
+    @ShellMethod(value = "Работа с Bean", key = "get-bean-method")
+    public String getValueBean() {
+        return spelMethodService.getValueBean();
+    }
+
 }
