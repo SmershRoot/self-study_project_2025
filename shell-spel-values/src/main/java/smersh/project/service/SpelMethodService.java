@@ -5,6 +5,7 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.expression.spel.SpelCompilerMode;
 import org.springframework.expression.spel.support.ReflectiveIndexAccessor;
+import org.springframework.expression.spel.support.SimpleEvaluationContext;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.stereotype.Service;
 import smersh.project.holder.ContextHolder;
@@ -13,6 +14,9 @@ import smersh.project.model.TestObjectWithList;
 import smersh.project.overloader.operator.ListOperatorOverloader;
 
 import java.awt.*;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -217,6 +221,37 @@ public class SpelMethodService {
                 .getValue(context, String.class);
     }
 
+    /**
+     * Примеры использования функций через registerFunction и setVariable
+     */
+    public String getValueFunctions() throws NoSuchMethodException, IllegalAccessException {
+        StandardEvaluationContext context = new StandardEvaluationContext();
+        ExpressionParser parser = new SpelExpressionParser();
+        MethodHandle formatted = MethodHandles.lookup().findVirtual(String.class, "formatted",
+                MethodType.methodType(String.class, Object[].class));
+        MethodHandle reverse = MethodHandles.lookup().findStatic(StringUtils.class, "reverse",
+                MethodType.methodType(String.class, String.class));
+
+        context.registerFunction("reverseString", StringUtils.class.getMethod("reverse", String.class));
+        context.registerFunction("formatted", formatted);
+        context.registerFunction("reverse", reverse);
+        context.setVariable("formattedV", formatted);
+        context.setVariable("reverseV", reverse);
+
+        String resultOneBlock = parser.parseExpression(
+                "'Function reverseString: ' + #reverseString('hello')+'\n'+"
+                        + "'Function formatted: ' + #formatted('Result - <%s>', 'OK')+'\n'+"
+                        + "'Function reverse: ' + #reverse('hello')+'\n'+"
+                        + "'Variable formatted: ' + #formattedV('Result - <%s>', 'OK')+'\n'+"
+                        + "'Variable reverse: ' + #reverseV('hello')"
+                ).getValue(context, String.class);
+
+        EvaluationContext evaContext = SimpleEvaluationContext.forReadOnlyDataBinding().build();
+        evaContext.setVariable("reverseV", reverse);
+        //evaContext.registerFunction("reverse", reverse); Нет такого
+
+        return resultOneBlock;
+    }
     private static String getTestValue(String value) {
         return StringUtils.reverse(value);
     }
