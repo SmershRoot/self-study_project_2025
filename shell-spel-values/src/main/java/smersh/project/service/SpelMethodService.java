@@ -265,7 +265,7 @@ public class SpelMethodService {
     public String getValueBean() {
         StandardEvaluationContext context = new StandardEvaluationContext();
         ExpressionParser parser = new SpelExpressionParser();
-        context.setBeanResolver(new BeanResolver(applicationContext));
+        context.setBeanResolver(new BeanFactoryResolver(applicationContext));
         Expression expressionFruitMap = parser.parseExpression("@fruitMap.get(T(java.awt.Color).RED)");
         Expression expressionTestService = parser.parseExpression("@testService.doSomething()");
         return "FruitMap: %s\nTestService: %s".formatted(
