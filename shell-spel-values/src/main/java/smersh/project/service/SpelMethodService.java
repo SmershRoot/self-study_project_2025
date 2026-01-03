@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.apache.commons.lang3.StringUtils;
+import smersh.project.resolver.TestBeanResolver;
 
 /**
  * Наборы методов с SPEL
@@ -264,13 +265,34 @@ public class SpelMethodService {
     public String getValueBean() {
         StandardEvaluationContext context = new StandardEvaluationContext();
         ExpressionParser parser = new SpelExpressionParser();
-        context.setBeanResolver(new BeanFactoryResolver(applicationContext));
+        context.setBeanResolver(new BeanResolver(applicationContext));
         Expression expressionFruitMap = parser.parseExpression("@fruitMap.get(T(java.awt.Color).RED)");
-        Expression expressionTestService = parser.parseExpression("@testService.doSomething()"); //parser.parseExpression("@testService.doSomething()
+        Expression expressionTestService = parser.parseExpression("@testService.doSomething()");
         return "FruitMap: %s\nTestService: %s".formatted(
                 expressionFruitMap.getValue(context, String.class),
                 expressionTestService.getValue(context, String.class)
         );
+    }
+
+    public String getValueTestBeanResolver() {
+        ExpressionParser parser = new SpelExpressionParser();
+        StandardEvaluationContext context = new StandardEvaluationContext();
+        context.setBeanResolver(new TestBeanResolver());
+        Expression expressionFruitMap = parser.parseExpression("@fruitMap.get(T(java.awt.Color).RED)");
+        Expression expressionTestService = parser.parseExpression("@testService.doSomething()");
+        Expression expressionNotAccess= parser.parseExpression("@notAccess.doSomething()");
+        String notAccess = "";
+        try {
+            notAccess = expressionNotAccess.getValue(context, String.class);
+        } catch (Exception e) {
+            notAccess = e.getCause().getMessage();
+        }
+        return "BeanResolver\nFruitMap: %s\nTestService: %s\nNotAccess: %s".formatted(
+                expressionFruitMap.getValue(context, String.class),
+                expressionTestService.getValue(context, String.class),
+                notAccess
+        );
+
     }
 
 

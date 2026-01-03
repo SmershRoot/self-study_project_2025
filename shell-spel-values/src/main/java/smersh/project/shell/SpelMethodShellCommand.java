@@ -72,9 +72,15 @@ public class SpelMethodShellCommand {
         return spelMethodService.getValueFunctions();
     }
 
-    @ShellMethod(value = "Работа с Bean", key = "get-bean-method")
+    @ShellMethod(value = "Работа с Bean через BeanResolver с ApplicationContext", key = "get-bean-method")
     public String getValueBean() {
         return spelMethodService.getValueBean();
     }
+
+    @ShellMethod(value = "Работа с Bean через свой BeanResolver", key = "get-bean-res-method")
+    public String getValueTestBeanResolver() {
+        return spelMethodService.getValueTestBeanResolver();
+    }
+
 
 }
