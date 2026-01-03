@@ -62,4 +62,9 @@ public class SpelMethodShellCommand {
         return spelMethodService.getValueFromMethod();
     }
 
+    @ShellMethod(value = "Работа с Root и This", key = "get-rt-method")
+    public String getValueRootAndThis() {
+        return spelMethodService.getValueRootAndThis();
+    }
+
 }

@@ -207,6 +207,16 @@ public class SpelMethodService {
                 .formatted(resTrue, resFalse, name, getReverseValue, getTestValue);
     }
 
+    public String getValueRootAndThis() {
+        TestObjectWithList testObject = new TestObjectWithList("Nikola Tesla", null,
+                new ArrayList<>(List.of("Zero", "One", "Two")));
+        ExpressionParser parser = new SpelExpressionParser();
+        StandardEvaluationContext context = new StandardEvaluationContext(testObject);
+        String expression = "#root.name + '\n ' + #root.getList.![length() + ' ' + #root.name + ' ' + #this.toString()+'\n']";
+        return parser.parseExpression(expression)
+                .getValue(context, String.class);
+    }
+
     private static String getTestValue(String value) {
         return StringUtils.reverse(value);
     }
