@@ -1,6 +1,7 @@
 package smersh.project.model;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Date;
 import java.util.List;
@@ -12,6 +13,9 @@ public class TestObjectWithList {
     private String name;
     @Getter
     private Date date;
+    @Getter
+    @Setter
+    private Object someObject;
 
     public TestObjectWithList(String name, Date date, List<String> list) {
         this.name = name;

@@ -13,6 +13,7 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.stereotype.Service;
 import smersh.project.holder.ContextHolder;
 import smersh.project.model.FruitMap;
+import smersh.project.model.Inventor;
 import smersh.project.model.TestObjectWithList;
 import smersh.project.overloader.operator.ListOperatorOverloader;
 
@@ -20,9 +21,7 @@ import java.awt.*;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -296,6 +295,7 @@ public class SpelMethodService {
 
     public String getValueWithOperators() {
         TestObjectWithList testObject = new TestObjectWithList("Nikola Tesla", null, new ArrayList<>(List.of("Zero")));
+        testObject.setSomeObject(Optional.of(new Inventor("Smersh", "Russia")));
         StandardEvaluationContext context = new StandardEvaluationContext(testObject);
         ExpressionParser parser = new SpelExpressionParser();
 
@@ -307,13 +307,36 @@ public class SpelMethodService {
                 .getValue(context, String.class);
         var val4 = parser.parseExpression("date?.toString()")//Если дата не нулл, то toString()
                 .getValue(context, String.class);
+        //При работе с Optional c 7 Spring происходит автоизвлечение значения при ?.и !. (ПО ФАКТУ НЕ ПРОИСХОДИТ!)
+        var val5 = "Inintial value val5";
+        try {
+            val5 = parser.parseExpression("someObject?.getName()")
+                    .getValue(context, String.class);
+        } catch (Exception e) {
+            val5 = e.getCause().getMessage();
+        }
 
-
-        return "val1: %s\nval2: %s\nval3: %s\nval4: %s"
-                .formatted(val1, val2, val3, val4);
+        return "val1: %s\nval2: %s\nval3: %s\nval4: %s\nval5: %s"
+                .formatted(val1, val2, val3, val4, val5);
     }
 
+    public String getValueWithCollectionOperators() {
+        var selectionList = "members?.?[nationality == 'Serbian']";//Выборка из коллекции ".?"
+        var selectionMapByKey = "officers.?[key < 'Smersh']";//Выборка из Map ".?" при участии ключа
+        var selectionMapByValue =  "officers.?[value.nationality < 'Serbian']";//Выборка из Map ".?" при участии значения
+        var selectionFirstFromList = "members?.^[nationality == 'Serbian']";//Первый элемент из коллекции ".^"
+        var selectionLastFromList = "members?.$[nationality == 'Serbian']";//Первый элемент из коллекции ".$"
+        return "";
+    }
 
+    /**
+     * Выборка из коллекции ".?"
+     *
+     * @return
+     */
+    public String getExpressionSelection () {
+        return "members?.?[nationality == 'Serbian']";
+    }
 
     private static String getTestValue(String value) {
         return StringUtils.reverse(value);
