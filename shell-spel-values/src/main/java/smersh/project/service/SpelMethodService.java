@@ -292,8 +292,27 @@ public class SpelMethodService {
                 expressionTestService.getValue(context, String.class),
                 notAccess
         );
-
     }
+
+    public String getValueWithOperators() {
+        TestObjectWithList testObject = new TestObjectWithList("Nikola Tesla", null, new ArrayList<>(List.of("Zero")));
+        StandardEvaluationContext context = new StandardEvaluationContext(testObject);
+        ExpressionParser parser = new SpelExpressionParser();
+
+        var val1 = parser.parseExpression("name=='Nikola Tesla'  ? 'true' : 'false'")
+                .getValue(context, String.class);
+        var val2 = parser.parseExpression("name?: 'no-name'")//Проверка на нулл
+                .getValue(context, String.class);
+        var val3 = parser.parseExpression("date?: 'no-date'")//Проверка на нулл
+                .getValue(context, String.class);
+        var val4 = parser.parseExpression("date?.toString()")//Если дата не нулл, то toString()
+                .getValue(context, String.class);
+
+
+        return "val1: %s\nval2: %s\nval3: %s\nval4: %s"
+                .formatted(val1, val2, val3, val4);
+    }
+
 
 
     private static String getTestValue(String value) {

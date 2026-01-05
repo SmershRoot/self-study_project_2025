@@ -10,6 +10,7 @@ public class TestObjectWithList {
     private List<String> list;
     @Getter
     private String name;
+    @Getter
     private Date date;
 
     public TestObjectWithList(String name, Date date, List<String> list) {

@@ -82,5 +82,11 @@ public class SpelMethodShellCommand {
         return spelMethodService.getValueTestBeanResolver();
     }
 
+    @ShellMethod(value = "Работа с Операциями", key = "get-oper-vals")
+    public String getValueWithOperators() {
+        return spelMethodService.getValueWithOperators();
+    }
+
+
 
 }
