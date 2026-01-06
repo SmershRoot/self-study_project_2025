@@ -87,6 +87,9 @@ public class SpelMethodShellCommand {
         return spelMethodService.getValueWithOperators();
     }
 
-
+    @ShellMethod(value = "Работа с Операциями над коллекциями и Map", key = "get-coll-oper-vals")
+    public String getValueWithCollectionOperators() {
+        return spelMethodService.getValueWithCollectionOperators();
+    }
 
 }

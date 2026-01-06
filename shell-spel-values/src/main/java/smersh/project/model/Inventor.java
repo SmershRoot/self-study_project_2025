@@ -24,9 +24,9 @@ public class Inventor {
         this.birthdate = c.getTime();
     }
 
-    public Inventor(String name, Date birthdate, String nationality) {
+    public Inventor(String name, PlaceOfBirth placeOfBirth, String nationality) {
         this.name = name;
         this.nationality = nationality;
-        this.birthdate = birthdate;
+        this.placeOfBirth = placeOfBirth;
     }
 }

@@ -12,9 +12,7 @@ import org.springframework.expression.spel.support.SimpleEvaluationContext;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.stereotype.Service;
 import smersh.project.holder.ContextHolder;
-import smersh.project.model.FruitMap;
-import smersh.project.model.Inventor;
-import smersh.project.model.TestObjectWithList;
+import smersh.project.model.*;
 import smersh.project.overloader.operator.ListOperatorOverloader;
 
 import java.awt.*;
@@ -308,7 +306,7 @@ public class SpelMethodService {
         var val4 = parser.parseExpression("date?.toString()")//Если дата не нулл, то toString()
                 .getValue(context, String.class);
         //При работе с Optional c 7 Spring происходит автоизвлечение значения при ?.и !. (ПО ФАКТУ НЕ ПРОИСХОДИТ!)
-        var val5 = "Inintial value val5";
+        var val5 = "Initial value val5";
         try {
             val5 = parser.parseExpression("someObject?.getName()")
                     .getValue(context, String.class);
@@ -320,13 +318,45 @@ public class SpelMethodService {
                 .formatted(val1, val2, val3, val4, val5);
     }
 
+    @SuppressWarnings("unchecked")
     public String getValueWithCollectionOperators() {
         var selectionList = "members?.?[nationality == 'Serbian']";//Выборка из коллекции ".?"
-        var selectionMapByKey = "officers.?[key < 'Smersh']";//Выборка из Map ".?" при участии ключа
+        var selectionMapByKey = "officers.?[key <= 'hero']";//Выборка из Map ".?" при участии ключа
         var selectionMapByValue =  "officers.?[value.nationality < 'Serbian']";//Выборка из Map ".?" при участии значения
         var selectionFirstFromList = "members?.^[nationality == 'Serbian']";//Первый элемент из коллекции ".^"
         var selectionLastFromList = "members?.$[nationality == 'Serbian']";//Первый элемент из коллекции ".$"
-        return "";
+
+        var projectionList = "members.![placeOfBirth.city]";//Проекция из коллекции "!"
+        var projectionMapByKey = "officers.![key]";//Проекция из Map ".?" при участии ключа
+        var projectionMapByValue =  "officers.![value.nationality]";//Проекция из Map ".?" при участии значения
+
+        ExpressionParser parser = new SpelExpressionParser();
+        Society society = getTestSociety();
+        EvaluationContext context = new StandardEvaluationContext(society);
+
+        List<Inventor> inventors = parser.parseExpression(selectionList)
+                .getValue(context, List.class);
+        inventors = parser.parseExpression(selectionMapByKey)
+                .getValue(context, List.class);//Вернет Lis<HashMap> всегда размером 1
+
+        Map<String, Inventor> officers = parser.parseExpression(selectionMapByKey)
+                .getValue(context, Map.class);
+        officers = parser.parseExpression(selectionMapByValue)
+                .getValue(context, Map.class);
+
+        Inventor inventor = parser.parseExpression(selectionFirstFromList)
+                .getValue(context, Inventor.class);
+        inventor = parser.parseExpression(selectionLastFromList)
+                .getValue(context, Inventor.class);
+
+        List<String> cities = parser.parseExpression(projectionList)
+                .getValue(context, List.class);
+        List<String> keys = parser.parseExpression(projectionMapByKey)
+                .getValue(context, List.class);
+        Set<String> nationalities = parser.parseExpression(projectionMapByValue)
+                .getValue(context, Set.class);
+
+        return "Выборка и проекция из коллекции прошли успешно";
     }
 
     /**
@@ -340,6 +370,20 @@ public class SpelMethodService {
 
     private static String getTestValue(String value) {
         return StringUtils.reverse(value);
+    }
+
+    private Society getTestSociety() {
+        Society society = new Society();
+        society.setName("IEEE");
+        society.getMembers().add(new Inventor("Nikola Tesla", new PlaceOfBirth("Smilyn", "The Austrian Empire"), "Serbian"));
+        society.getMembers().add(new Inventor("Albert Einstein", new PlaceOfBirth("Ulm", "West Germany"), "German"));
+        society.getMembers().add(new Inventor("Smersh", new PlaceOfBirth("Tyumen", "Russia"), "Russia"));
+        society.getMembers().add(new Inventor("Ratko Mladich", new PlaceOfBirth("Bozhanovichi", "Croatia"), "Serbian"));
+        society.getOfficers().put("president", new Inventor("Nikola Tesla", new PlaceOfBirth("Smilyn", "The Austrian Empire"), "Serbian"));
+        society.getOfficers().put("advisors", new Inventor("Albert Einstein", new PlaceOfBirth("Ulm", "West Germany"), "German"));
+        society.getOfficers().put("hero", new Inventor("Ratko Mladich", new PlaceOfBirth("Bozhanovichi", "Croatia"), "Serbian"));
+        society.getOfficers().put("admin", new Inventor("Smersh", new PlaceOfBirth("Tyumen", "Russia"), "Russia"));
+        return society;
     }
 
 }
