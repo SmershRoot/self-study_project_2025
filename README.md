@@ -8,7 +8,9 @@ https://docs.spring.io/spring-framework/reference/core/expressions/evaluation.ht
 - - The IoC Container
 - - Resources
 - - Validation, Data Binding, and Type Conversion
-- - 🔄 Spring Expression Language (SpEL)
+- - ✅ Spring Expression Language (SpEL)
+- - - ✅ Подход как в документации
+- - - 🔄 Свой подход в @Value
 - - Aspect Oriented Programming with Spring
 - - Spring AOP APIs
 - - Resilience Features
