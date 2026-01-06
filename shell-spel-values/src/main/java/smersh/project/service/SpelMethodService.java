@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.expression.BeanFactoryResolver;
 import org.springframework.expression.*;
+import org.springframework.expression.common.TemplateParserContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.expression.spel.SpelCompilerMode;
@@ -254,6 +255,34 @@ public class SpelMethodService {
         //evaContext.registerFunction("reverse", reverse); Нет такого
 
         return resultOneBlock;
+    }
+
+    /**
+     * Примеры использования Шаблонного парсера. Для примера используется выше написанный метод
+     * функций через registerFunction и setVariable
+     * <p>#{} - надо заключать в такую структуру и 2-ым элементом TemplateParserContext</p>
+     */
+    public String getValueFunctionsWithTemplate() throws NoSuchMethodException, IllegalAccessException {
+        StandardEvaluationContext context = new StandardEvaluationContext();
+        ExpressionParser parser = new SpelExpressionParser();
+        MethodHandle formatted = MethodHandles.lookup().findVirtual(String.class, "formatted",
+                MethodType.methodType(String.class, Object[].class));
+        MethodHandle reverse = MethodHandles.lookup().findStatic(StringUtils.class, "reverse",
+                MethodType.methodType(String.class, String.class));
+
+        context.registerFunction("reverseString", StringUtils.class.getMethod("reverse", String.class));
+        context.registerFunction("formatted", formatted);
+        context.registerFunction("reverse", reverse);
+        context.setVariable("formattedV", formatted);
+        context.setVariable("reverseV", reverse);
+
+        return parser.parseExpression(
+                "Function reverseString: #{#reverseString('hello')}\n"
+                        + "Function formatted: #{#formatted('Result - <%s>', 'OK')}\n"
+                        + "Function reverse: #{#reverse('hello')}\n"
+                        + "Variable formatted: #{#formattedV('Result - <%s>', 'OK')}\n"
+                        + "Variable reverse: #{#reverseV('hello')}", new TemplateParserContext()
+        ).getValue(context, String.class);
     }
 
     /**

@@ -92,4 +92,8 @@ public class SpelMethodShellCommand {
         return spelMethodService.getValueWithCollectionOperators();
     }
 
+    @ShellMethod(value = "Работа с использованием шаблонизатора", key = "get-with-template")
+    public String getValueFunctionsWithTemplate() throws NoSuchMethodException, IllegalAccessException {
+        return spelMethodService.getValueFunctionsWithTemplate();
+    }
 }
