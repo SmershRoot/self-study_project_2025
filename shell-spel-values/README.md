@@ -2,6 +2,8 @@
 https://docs.spring.io/spring-framework/reference/core/expressions.html
 https://javarush.com/quests/lectures/questspring.level01.lecture57 - корявый перевод документации
 
+https://vkvideo.ru/video-145052891_456248476 - Otus-видео
+
 ## ПРЕДСТОЯЩИЕ ДОРАБОТКИ:
 ### 1. сервисы - интерфейс и работа через него
 ### 2. корректная работа с РУ
